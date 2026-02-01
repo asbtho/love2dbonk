@@ -48,15 +48,12 @@ function PlayState:render()
     -- translate the entire view of the scene to emulate a camera
     love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))
     
-    -- render dungeon and all entities separate from hearts GUI
     love.graphics.push()
     self.dungeon:render()
     love.graphics.pop()
 end
 
 function PlayState:updateCamera()
-    -- clamp movement of the camera's X between 0 and the map bounds - virtual width,
-    -- setting it half the screen to the left of the player so they are in the center
     self.camX = self.player.x - VIRTUAL_WIDTH / 2 + 9
     self.camY = self.player.y - VIRTUAL_HEIGHT / 2 + 9
 end
