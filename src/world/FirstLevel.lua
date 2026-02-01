@@ -1,6 +1,6 @@
-Room = Class{}
+FirstLevel = Class{}
 
-function Room:init(player)
+function FirstLevel:init(player)
     self.width = MAP_WIDTH
     self.height = MAP_HEIGHT
 
@@ -14,12 +14,12 @@ function Room:init(player)
     self.renderOffsetX = MAP_RENDER_OFFSET_X
     self.renderOffsetY = MAP_RENDER_OFFSET_Y
 
-    -- used for drawing when this room is the next room, adjacent to the active
+    -- used for drawing when this FirstLevel is the next FirstLevel, adjacent to the active
     self.adjacentOffsetX = 0
     self.adjacentOffsetY = 0
 end
 
-function Room:generateWallsAndFloors()
+function FirstLevel:generateWallsAndFloors()
     for y = 1, self.height do
         table.insert(self.tiles, {})
 
@@ -55,11 +55,11 @@ function Room:generateWallsAndFloors()
     end
 end
 
-function Room:update(dt)
+function FirstLevel:update(dt)
     self.player:update(dt)
 end
 
-function Room:render()
+function FirstLevel:render()
     for y = 1, self.height do
         for x = 1, self.width do
             local tile = self.tiles[y][x]

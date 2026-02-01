@@ -19,7 +19,7 @@ require 'src/StateMachine'
 require 'src/Util'
 
 require 'src/world/Dungeon'
-require 'src/world/Room'
+require 'src/world/FirstLevel'
 
 require 'src/states/BaseState'
 

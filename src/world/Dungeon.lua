@@ -3,13 +3,13 @@ Dungeon = Class{}
 function Dungeon:init(player)
     self.player = player
 
-    self.currentRoom = Room(self.player)
+    self.currentLevel = FirstLevel(self.player)
 end
 
 function Dungeon:update(dt)
-    self.currentRoom:update(dt)
+    self.currentLevel:update(dt)
 end
 
 function Dungeon:render()
-    self.currentRoom:render()
+    self.currentLevel:render()
 end
