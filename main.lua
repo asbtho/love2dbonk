@@ -14,9 +14,9 @@ function love.load()
     love.graphics.setFont(gFonts['small'])
 
     gStateMachine = StateMachine {
-        ['test'] = function() return PlayState() end
+        ['play'] = function() return PlayState() end
     }
-    gStateMachine:change('test')
+    gStateMachine:change('play')
 
     love.keyboard.keysPressed = {}
 end

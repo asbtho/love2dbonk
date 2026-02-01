@@ -1,11 +1,14 @@
 Room = Class{}
 
-function Room:init()
+function Room:init(player)
     self.width = MAP_WIDTH
     self.height = MAP_HEIGHT
 
     self.tiles = {}
     self:generateWallsAndFloors()
+
+    -- reference to player for collisions, etc.
+    self.player = player
 
     -- used for centering the dungeon rendering
     self.renderOffsetX = MAP_RENDER_OFFSET_X
@@ -53,6 +56,7 @@ function Room:generateWallsAndFloors()
 end
 
 function Room:update(dt)
+    self.player:update(dt)
 end
 
 function Room:render()
@@ -60,8 +64,12 @@ function Room:render()
         for x = 1, self.width do
             local tile = self.tiles[y][x]
             love.graphics.draw(gTextures['tiles'], gFrames['tiles'][tile.id],
-                (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX, 
+                (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX,
                 (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY)
         end
+    end
+
+    if self.player then
+        self.player:render()
     end
 end

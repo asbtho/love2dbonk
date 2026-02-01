@@ -1,7 +1,9 @@
 Dungeon = Class{}
 
-function Dungeon:init()
-    self.currentRoom = Room()
+function Dungeon:init(player)
+    self.player = player
+
+    self.currentRoom = Room(self.player)
 end
 
 function Dungeon:update(dt)
