@@ -5,6 +5,8 @@ function love.load()
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    debugEnabled = true
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         vsync = true,

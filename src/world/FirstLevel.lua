@@ -25,31 +25,40 @@ function FirstLevel:generateWallsAndFloors()
 
         for x = 1, self.width do
             local id = TILE_EMPTY
+            local isWall = false
 
             if x == 1 and y == 1 then
                 id = TILE_TOP_LEFT_CORNER
+                isWall = true
             elseif x == 1 and y == self.height then
                 id = TILE_BOTTOM_LEFT_CORNER
+                isWall = true
             elseif x == self.width and y == 1 then
                 id = TILE_TOP_RIGHT_CORNER
+                isWall = true
             elseif x == self.width and y == self.height then
                 id = TILE_BOTTOM_RIGHT_CORNER
+                isWall = true
             
             -- random left-hand walls, right walls, top, bottom, and floors
             elseif x == 1 then
                 id = TILE_LEFT_WALLS[math.random(#TILE_LEFT_WALLS)]
+                isWall = true
             elseif x == self.width then
                 id = TILE_RIGHT_WALLS[math.random(#TILE_RIGHT_WALLS)]
+                isWall = true
             elseif y == 1 then
                 id = TILE_TOP_WALLS[math.random(#TILE_TOP_WALLS)]
+                isWall = true
             elseif y == self.height then
                 id = TILE_BOTTOM_WALLS[math.random(#TILE_BOTTOM_WALLS)]
+                isWall = true
             else
                 id = TILE_FLOORS[math.random(#TILE_FLOORS)]
             end
             
             table.insert(self.tiles[y], {
-                id = id
+                id = id, isWall = isWall
             })
         end
     end
@@ -63,9 +72,15 @@ function FirstLevel:render()
     for y = 1, self.height do
         for x = 1, self.width do
             local tile = self.tiles[y][x]
-            love.graphics.draw(gTextures['tiles'], gFrames['tiles'][tile.id],
-                (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX,
-                (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY)
+            local drawX = (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX
+            local drawY = (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY
+            love.graphics.draw( gTextures['tiles'], gFrames['tiles'][tile.id], drawX, drawY )
+            if debugEnabled and tile.isWall then
+                love.graphics.setColor(255, 0, 255, 255)
+                love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
+                love.graphics.setColor(255, 255, 255, 255)
+                --love.graphics.print( tile.id, drawX, drawY, 0)
+            end
         end
     end
 

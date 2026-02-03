@@ -13,8 +13,8 @@ function PlayState:init()
         x = VIRTUAL_WIDTH / 2 - 8,
         y = VIRTUAL_HEIGHT / 2 - 11,
         
-        width = 16,
-        height = 22,
+        width = 19,
+        height = 19,
 
         -- one heart == 2 health
         health = 6,

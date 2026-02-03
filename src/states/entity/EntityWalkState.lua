@@ -44,8 +44,8 @@ function EntityWalkState:update(dt)
         local bottomEdge = VIRTUAL_HEIGHT - (VIRTUAL_HEIGHT - MAP_HEIGHT * TILE_SIZE) 
             + MAP_RENDER_OFFSET_Y - TILE_SIZE
 
-        if self.entity.y + self.entity.height >= bottomEdge then
-            self.entity.y = bottomEdge - self.entity.height
+        if self.entity.y - self.entity.offsetY + self.entity.height >= bottomEdge then
+            self.entity.y = bottomEdge - self.entity.height + self.entity.offsetY
             self.bumped = true
         end
     end
@@ -57,7 +57,9 @@ function EntityWalkState:render()
         math.floor(self.entity.x - self.entity.offsetX), math.floor(self.entity.y - self.entity.offsetY))
     
     -- debug code
-    -- love.graphics.setColor(255, 0, 255, 255)
-    -- love.graphics.rectangle('line', self.entity.x, self.entity.y, self.entity.width, self.entity.height)
-    -- love.graphics.setColor(255, 255, 255, 255)
+    if debugEnabled then
+        love.graphics.setColor(255, 0, 255, 255)
+        love.graphics.rectangle('line', self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY, self.entity.width, self.entity.height)
+        love.graphics.setColor(255, 255, 255, 255)
+    end
 end
