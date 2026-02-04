@@ -5,6 +5,8 @@ function love.load()
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    debugEnabled = false
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         vsync = true,
@@ -14,9 +16,9 @@ function love.load()
     love.graphics.setFont(gFonts['small'])
 
     gStateMachine = StateMachine {
-        ['test'] = function() return PlayState() end
+        ['play'] = function() return PlayState() end
     }
-    gStateMachine:change('test')
+    gStateMachine:change('play')
 
     love.keyboard.keysPressed = {}
 end
