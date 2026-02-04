@@ -4,23 +4,20 @@ function PlayState:init()
     self.camX = 0
     self.camY = 0
 
-    enableCamera = false
+    self.enableCamera = false
 
     self.player = Player {
         animations = ENTITY_DEFS['player'].animations,
         walkSpeed = ENTITY_DEFS['player'].walkSpeed,
         
-        x = VIRTUAL_WIDTH / 2 - 8,
-        y = VIRTUAL_HEIGHT / 2 - 11,
+        x = VIRTUAL_WIDTH / 2 - 10,
+        y = VIRTUAL_HEIGHT / 2 - 10,
         
         width = 19,
         height = 19,
 
         -- one heart == 2 health
-        health = 6,
-
-        -- rendering and collision offset for spaced sprites
-        offsetY = 5
+        health = 6
     }
 
     self.dungeon = Dungeon(self.player)
@@ -39,14 +36,16 @@ function PlayState:update(dt)
 
     self.dungeon:update(dt)
 
-    if enableCamera then
+    if self.enableCamera then
         self:updateCamera()
     end
 end
 
 function PlayState:render()
     -- translate the entire view of the scene to emulate a camera
-    love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))
+    if self.enableCamera then
+        love.graphics.translate(-math.floor(self.camX), -math.floor(self.camY))
+    end
     
     love.graphics.push()
     self.dungeon:render()

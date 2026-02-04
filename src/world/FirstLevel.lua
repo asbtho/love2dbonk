@@ -29,36 +29,36 @@ function FirstLevel:generateWallsAndFloors()
 
             if x == 1 and y == 1 then
                 id = TILE_TOP_LEFT_CORNER
-                isWall = true
             elseif x == 1 and y == self.height then
                 id = TILE_BOTTOM_LEFT_CORNER
-                isWall = true
             elseif x == self.width and y == 1 then
                 id = TILE_TOP_RIGHT_CORNER
-                isWall = true
             elseif x == self.width and y == self.height then
                 id = TILE_BOTTOM_RIGHT_CORNER
-                isWall = true
             
             -- random left-hand walls, right walls, top, bottom, and floors
             elseif x == 1 then
                 id = TILE_LEFT_WALLS[math.random(#TILE_LEFT_WALLS)]
                 isWall = true
+                bumped = false
             elseif x == self.width then
                 id = TILE_RIGHT_WALLS[math.random(#TILE_RIGHT_WALLS)]
                 isWall = true
+                bumped = false
             elseif y == 1 then
                 id = TILE_TOP_WALLS[math.random(#TILE_TOP_WALLS)]
                 isWall = true
+                bumped = false
             elseif y == self.height then
                 id = TILE_BOTTOM_WALLS[math.random(#TILE_BOTTOM_WALLS)]
                 isWall = true
+                bumped = false
             else
                 id = TILE_FLOORS[math.random(#TILE_FLOORS)]
             end
             
             table.insert(self.tiles[y], {
-                id = id, isWall = isWall
+                id = id, isWall = isWall, bumped = bumped
             })
         end
     end
@@ -76,10 +76,14 @@ function FirstLevel:render()
             local drawY = (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY
             love.graphics.draw( gTextures['tiles'], gFrames['tiles'][tile.id], drawX, drawY )
             if debugEnabled and tile.isWall then
-                love.graphics.setColor(255, 0, 255, 255)
+                if tile.bumped then
+                    love.graphics.setColor(255, 255, 0, 255)
+                else
+                    love.graphics.setColor(255, 0, 255, 255)
+                end
                 love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
                 love.graphics.setColor(255, 255, 255, 255)
-                --love.graphics.print( tile.id, drawX, drawY, 0)
+                love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)  
             end
         end
     end
