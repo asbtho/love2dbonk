@@ -8,4 +8,14 @@ function PlayerIdleState:update(dt)
        love.keyboard.isDown('up') or love.keyboard.isDown('down') then
         self.entity:changeState('walk')
     end
+
+    if love.keyboard.wasPressed("space") then
+        local projectile = Projectile({
+            x = self.entity.x,
+            y = self.entity.y,
+            direction = self.entity.direction,
+            speed = 200
+        })
+        table.insert(self.dungeon.currentLevel.projectiles, projectile)
+    end
 end

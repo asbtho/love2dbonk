@@ -11,6 +11,8 @@ function FirstLevel:init(player)
     -- reference to player for collisions, etc.
     self.player = player
 
+    self.projectiles = {}
+
     -- used for centering the dungeon rendering
     self.renderOffsetX = MAP_RENDER_OFFSET_X
     self.renderOffsetY = MAP_RENDER_OFFSET_Y
@@ -18,6 +20,36 @@ function FirstLevel:init(player)
     -- used for drawing when this FirstLevel is the next FirstLevel, adjacent to the active
     self.adjacentOffsetX = 0
     self.adjacentOffsetY = 0
+end
+
+function FirstLevel:update(dt)
+    self.player:update(dt)
+
+    for i = #self.projectiles, 1, -1 do
+        self.projectiles[i]:update(dt)
+    end
+end
+
+function FirstLevel:render()
+    for y = 1, self.height do
+        for x = 1, self.width do
+            local tile = self.tiles[y][x]
+            local drawX = (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX
+            local drawY = (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY
+            love.graphics.draw( gTextures['tiles'], gFrames['tiles'][tile.id], drawX, drawY )
+            if debugEnabled and tile.isWall then
+                self:debug(tile, drawX, drawY, x, y)
+            end
+        end
+    end
+
+    if self.player then
+        self.player:render()
+    end
+
+    for i = #self.projectiles, 1, -1 do
+        self.projectiles[i]:render()
+    end
 end
 
 function FirstLevel:generateWallsAndFloors()
@@ -68,28 +100,6 @@ function FirstLevel:generateWallsAndFloors()
                 id = id, isWall = isWall, bumped = bumped
             })
         end
-    end
-end
-
-function FirstLevel:update(dt)
-    self.player:update(dt)
-end
-
-function FirstLevel:render()
-    for y = 1, self.height do
-        for x = 1, self.width do
-            local tile = self.tiles[y][x]
-            local drawX = (x - 1) * TILE_SIZE + self.renderOffsetX + self.adjacentOffsetX
-            local drawY = (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY
-            love.graphics.draw( gTextures['tiles'], gFrames['tiles'][tile.id], drawX, drawY )
-            if debugEnabled and tile.isWall then
-                self:debug(tile, drawX, drawY, x, y)
-            end
-        end
-    end
-
-    if self.player then
-        self.player:render()
     end
 end
 
