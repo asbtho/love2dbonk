@@ -65,33 +65,39 @@ end
 
 function EntityWalkState:collidesToWallUp()
     local halfHeight = self.entity.height / 2
+    local halfWidth = self.entity.width / 2
     local top = self.entity.y - self.entity.offsetY + halfHeight
     local left = self.entity.x - self.entity.offsetX
     local right = self.entity.x - self.entity.offsetX + self.entity.width
+    local center = self.entity.x - self.entity.offsetX + halfWidth
     
     local tileA = self:getTileAt(left, top)
     local tileB = self:getTileAt(right, top)
+    local tileC = self:getTileAt(center, top)
 
     if debugEnabled then
-        self:debugCollide(tileA, tileB)
+        self:debugCollide(tileA, tileB, tileC)
     end
 
-    return tileA.isWall or tileB.isWall
+    return tileA.isWall or tileB.isWall or tileC.isWall
 end
 
 function EntityWalkState:collidesToWallDown()
+    local halfWidth = self.entity.width / 2
     local left = self.entity.x - self.entity.offsetX
     local right = self.entity.x - self.entity.offsetX + self.entity.width
     local bottom = self.entity.y - self.entity.offsetY + self.entity.height + 1
+    local center = self.entity.x - self.entity.offsetX + halfWidth
 
     local tileA = self:getTileAt(left, bottom)
     local tileB = self:getTileAt(right, bottom)
+    local tileC = self:getTileAt(center, bottom)
 
     if debugEnabled then
-        self:debugCollide(tileA, tileB)
+        self:debugCollide(tileA, tileB, tileC)
     end
 
-    return tileA.isWall or tileB.isWall
+    return tileA.isWall or tileB.isWall or tileC.isWall
 end
 
 function EntityWalkState:collidesToWallLeft()
@@ -137,11 +143,14 @@ function EntityWalkState:debug()
     love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
 end
 
-function EntityWalkState:debugCollide(tileA, tileB)
+function EntityWalkState:debugCollide(tileA, tileB, tileC)
     if tileA.isWall then
         tileA.bumped = true
     end
     if tileB.isWall then
         tileB.bumped = true
+    end
+    if tileC and tileC.isWall then
+        tileC.bumped = true
     end
 end
