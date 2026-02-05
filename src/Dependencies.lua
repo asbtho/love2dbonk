@@ -17,6 +17,8 @@ require 'src/entity_defs'
 require 'src/Player'
 require 'src/StateMachine'
 require 'src/Util'
+require 'src/Hitbox'
+require 'src/Projectile'
 
 require 'src/world/Dungeon'
 require 'src/world/FirstLevel'
