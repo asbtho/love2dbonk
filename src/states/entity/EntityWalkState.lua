@@ -12,7 +12,6 @@ function EntityWalkState:init(entity, dungeon)
 end
 
 function EntityWalkState:update(dt)
-    --self:oldCheckCollision(dt)
     self:newCheckCollision(dt)
 end
 
@@ -21,16 +20,8 @@ function EntityWalkState:render()
     love.graphics.draw(gTextures[anim.texture], gFrames[anim.texture][anim:getCurrentFrame()],
         math.floor(self.entity.x - self.entity.offsetX), math.floor(self.entity.y - self.entity.offsetY))
     
-    -- debug code
     if debugEnabled then
-        love.graphics.setColor(255, 0, 255, 255)
-        love.graphics.rectangle('line', self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY, self.entity.width, self.entity.height)
-        love.graphics.setColor(255, 255, 0, 255)
-        love.graphics.rectangle('line', self.entity.x, self.entity.y, 1, 1)
-        love.graphics.setColor(255, 255, 255, 255)
-        love.graphics.print( "x: " .. math.floor(self.entity.x - self.entity.offsetX) .. " y: " .. math.floor(self.entity.y - self.entity.offsetY), self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 10, 0)
-        love.graphics.print( "offsetX:" .. self.entity.offsetX, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 30, 0)
-        love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
+        self:debug()
     end
 end
 
@@ -78,19 +69,14 @@ function EntityWalkState:collidesToWallUp()
     local left = self.entity.x - self.entity.offsetX
     local right = self.entity.x - self.entity.offsetX + self.entity.width
     
-    local tileLeftTop = self:getTileAt(left, top)
-    local tileRightTop = self:getTileAt(right, top)
+    local tileA = self:getTileAt(left, top)
+    local tileB = self:getTileAt(right, top)
 
     if debugEnabled then
-        if tileLeftTop.isWall then
-            tileLeftTop.bumped = true
-        end
-        if tileRightTop.isWall then
-            tileRightTop.bumped = true
-        end
+        self:debugCollide(tileA, tileB)
     end
 
-    return tileLeftTop.isWall or tileRightTop.isWall
+    return tileA.isWall or tileB.isWall
 end
 
 function EntityWalkState:collidesToWallDown()
@@ -98,19 +84,14 @@ function EntityWalkState:collidesToWallDown()
     local right = self.entity.x - self.entity.offsetX + self.entity.width
     local bottom = self.entity.y - self.entity.offsetY + self.entity.height + 1
 
-    local tileLeftDown = self:getTileAt(left, bottom)
-    local tileRightDown = self:getTileAt(right, bottom)
+    local tileA = self:getTileAt(left, bottom)
+    local tileB = self:getTileAt(right, bottom)
 
     if debugEnabled then
-        if tileLeftDown.isWall then
-            tileLeftDown.bumped = true
-        end
-        if tileRightDown.isWall then
-            tileRightDown.bumped = true
-        end
+        self:debugCollide(tileA, tileB)
     end
 
-    return tileLeftDown.isWall or tileRightDown.isWall
+    return tileA.isWall or tileB.isWall
 end
 
 function EntityWalkState:collidesToWallLeft()
@@ -119,19 +100,14 @@ function EntityWalkState:collidesToWallLeft()
     local left = self.entity.x - self.entity.offsetX - 1
     local bottom = self.entity.y - self.entity.offsetY + self.entity.height
 
-    local tileLeftTop = self:getTileAt(left, top)
-    local tileLeftDown = self:getTileAt(left, bottom)
+    local tileA = self:getTileAt(left, top)
+    local tileB = self:getTileAt(left, bottom)
 
     if debugEnabled then
-        if tileLeftTop.isWall then
-            tileLeftTop.bumped = true
-        end
-        if tileLeftDown.isWall then
-            tileLeftDown.bumped = true
-        end
+        self:debugCollide(tileA, tileB)
     end
 
-    return tileLeftTop.isWall or tileLeftDown.isWall
+    return tileA.isWall or tileB.isWall
 end
 
 function EntityWalkState:collidesToWallRight()
@@ -140,17 +116,32 @@ function EntityWalkState:collidesToWallRight()
     local right = self.entity.x - self.entity.offsetX + self.entity.width + 1
     local bottom = self.entity.y - self.entity.offsetY + self.entity.height
 
-    local tileRightTop = self:getTileAt(right, top)
-    local tileRightDown = self:getTileAt(right, bottom)
+    local tileA = self:getTileAt(right, top)
+    local tileB = self:getTileAt(right, bottom)
 
     if debugEnabled then
-        if tileRightTop.isWall then
-            tileRightTop.bumped = true
-        end
-        if tileRightDown.isWall then
-            tileRightDown.bumped = true
-        end
+        self:debugCollide(tileA, tileB)
     end
 
-    return tileRightTop.isWall or tileRightDown.isWall
+    return tileA.isWall or tileB.isWall
+end
+
+function EntityWalkState:debug()
+    love.graphics.setColor(255, 0, 255, 255)
+    love.graphics.rectangle('line', self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY, self.entity.width, self.entity.height)
+    love.graphics.setColor(255, 255, 0, 255)
+    love.graphics.rectangle('line', self.entity.x, self.entity.y, 1, 1)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print( "x: " .. math.floor(self.entity.x - self.entity.offsetX) .. " y: " .. math.floor(self.entity.y - self.entity.offsetY), self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 10, 0)
+    love.graphics.print( "offsetX:" .. self.entity.offsetX, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 30, 0)
+    love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
+end
+
+function EntityWalkState:debugCollide(tileA, tileB)
+    if tileA.isWall then
+        tileA.bumped = true
+    end
+    if tileB.isWall then
+        tileB.bumped = true
+    end
 end

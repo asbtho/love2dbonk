@@ -5,8 +5,9 @@ function FirstLevel:init(player)
     self.height = MAP_HEIGHT
 
     self.tiles = {}
+    self.extraWalls = true
     self:generateWallsAndFloors()
-
+    
     -- reference to player for collisions, etc.
     self.player = player
 
@@ -54,7 +55,13 @@ function FirstLevel:generateWallsAndFloors()
                 isWall = true
                 bumped = false
             else
-                id = TILE_FLOORS[math.random(#TILE_FLOORS)]
+                if self.extraWalls and math.random(100) == 1 then
+                    id = TILE_TOP_WALLS[math.random(#TILE_TOP_WALLS)]
+                    isWall = true
+                    bumped = false
+                else
+                    id = TILE_FLOORS[math.random(#TILE_FLOORS)]
+                end
             end
             
             table.insert(self.tiles[y], {
@@ -76,14 +83,7 @@ function FirstLevel:render()
             local drawY = (y - 1) * TILE_SIZE + self.renderOffsetY + self.adjacentOffsetY
             love.graphics.draw( gTextures['tiles'], gFrames['tiles'][tile.id], drawX, drawY )
             if debugEnabled and tile.isWall then
-                if tile.bumped then
-                    love.graphics.setColor(255, 255, 0, 255)
-                else
-                    love.graphics.setColor(255, 0, 255, 255)
-                end
-                love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
-                love.graphics.setColor(255, 255, 255, 255)
-                love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)  
+                self:debug(tile, drawX, drawY, x, y)
             end
         end
     end
@@ -91,4 +91,15 @@ function FirstLevel:render()
     if self.player then
         self.player:render()
     end
+end
+
+function FirstLevel:debug(tile, drawX, drawY, x, y)
+    if tile.bumped then
+        love.graphics.setColor(255, 255, 0, 255)
+    else
+        love.graphics.setColor(255, 0, 255, 255)
+    end
+    love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)
 end
