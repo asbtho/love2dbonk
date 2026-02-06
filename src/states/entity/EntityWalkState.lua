@@ -1,18 +1,21 @@
 
 EntityWalkState = Class{__includes = BaseState}
 
-function EntityWalkState:init(entity, dungeon)
+function EntityWalkState:init(entity, tiles)
     self.entity = entity
     self.entity:changeAnimation('walk-down')
 
-    self.dungeon = dungeon
+    self.tiles = tiles
+
+    self.moveDuration = 0
+    self.movementTimer = 0
 
     -- keeps track of whether we just hit a wall
     self.bumped = false
 end
 
 function EntityWalkState:update(dt)
-    self:newCheckCollision(dt)
+    self:CheckCollision(dt)
 end
 
 function EntityWalkState:render()
@@ -25,7 +28,7 @@ function EntityWalkState:render()
     end
 end
 
-function EntityWalkState:newCheckCollision(dt)
+function EntityWalkState:CheckCollision(dt)
     -- assume we didn't hit a wall
     self.bumped = false
 
@@ -57,10 +60,36 @@ function EntityWalkState:newCheckCollision(dt)
     end
 end
 
+function EntityWalkState:processAI(params, dt)
+    local level = params.level
+    local directions = {'left', 'right', 'up', 'down'}
+
+    if self.moveDuration == 0 or self.bumped then
+        
+        -- set an initial move duration and direction
+        self.moveDuration = math.random(5)
+        self.entity.direction = directions[math.random(#directions)]
+        self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+    elseif self.movementTimer > self.moveDuration then
+        self.movementTimer = 0
+
+        -- chance to go idle
+        if math.random(3) == 1 then
+            self.entity:changeState('idle')
+        else
+            self.moveDuration = math.random(5)
+            self.entity.direction = directions[math.random(#directions)]
+            self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+        end
+    end
+
+    self.movementTimer = self.movementTimer + dt
+end
+
 function EntityWalkState:getTileAt(entityX, entityY)
     local tileX = math.floor(entityX / TILE_SIZE)
     local tileY = math.floor(entityY / TILE_SIZE)
-    return self.dungeon.currentLevel.tiles[tileY][tileX]
+    return self.tiles[tileY][tileX]
 end
 
 function EntityWalkState:collidesToWallUp()

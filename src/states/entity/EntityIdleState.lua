@@ -5,6 +5,9 @@ function EntityIdleState:init(entity, dungeon)
 
     self.dungeon = dungeon
 
+    self.waitDuration = 0
+    self.waitTimer = 0
+
     self.entity:changeAnimation('idle-' .. self.entity.direction)
 end
 
@@ -15,6 +18,18 @@ function EntityIdleState:render()
     
     if debugEnabled then
         self:debug()
+    end
+end
+
+function EntityIdleState:processAI(params, dt)
+    if self.waitDuration == 0 then
+        self.waitDuration = math.random(5)
+    else
+        self.waitTimer = self.waitTimer + dt
+
+        if self.waitTimer > self.waitDuration then
+            self.entity:changeState('walk')
+        end
     end
 end
 
