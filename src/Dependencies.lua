@@ -17,6 +17,8 @@ require 'src/entity_defs'
 require 'src/Player'
 require 'src/StateMachine'
 require 'src/Util'
+require 'src/Hitbox'
+require 'src/Projectile'
 
 require 'src/world/Dungeon'
 require 'src/world/FirstLevel'
@@ -37,17 +39,20 @@ require 'src/states/game/PlayState'
 gTextures = {
     ['tiles'] = love.graphics.newImage('graphics/dungeon_tileset.png'),
     ['soldier-walk-right'] = love.graphics.newImage('graphics/soldier_walk_right.png'),
-    ['soldier-walk-left'] = love.graphics.newImage('graphics/soldier_walk_left.png')
+    ['soldier-walk-left'] = love.graphics.newImage('graphics/soldier_walk_left.png'),
+    ['entities'] = love.graphics.newImage('graphics/entities.png')
 }
 
 gFrames = {
     ['tiles'] = GenerateQuads(gTextures['tiles'], 16, 16),
     ['soldier-walk-right'] = GenerateQuads(gTextures['soldier-walk-right'], 19, 19),
-    ['soldier-walk-left'] = GenerateQuads(gTextures['soldier-walk-left'], 19, 19)
+    ['soldier-walk-left'] = GenerateQuads(gTextures['soldier-walk-left'], 19, 19),
+    ['entities'] = GenerateQuads(gTextures['entities'], 16, 16)
 }
 
 gFonts = {
-    ['small'] = love.graphics.newFont('fonts/font.ttf', 8)
+    ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
+    ['medium'] = love.graphics.newFont('fonts/font.ttf', 16)
 }
 
 gSounds = {
