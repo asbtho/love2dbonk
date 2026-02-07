@@ -29,7 +29,6 @@ function FirstLevel:update(dt)
 
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
-
         if entity.health <= 0 then
             entity.dead = true
         elseif not entity.dead then
@@ -41,8 +40,27 @@ function FirstLevel:update(dt)
     for i = #self.projectiles, 1, -1 do
         local projectile = self.projectiles[i]
         projectile:update(dt)
+        for j = #self.entities, 1, -1 do
+            local entity = self.entities[j]
+            if not entity.dead and projectile:collides(entity) then
+                entity.health = entity.health - 1
+                table.remove(self.projectiles, i)
+                break
+            end
+        end
+    end
+
+    for i = #self.projectiles, 1, -1 do
+        local projectile = self.projectiles[i]
         if projectile.destroyed then
             table.remove(self.projectiles, i)
+        end
+    end
+
+    for i = #self.entities, 1, -1 do
+        local entity = self.entities[i]
+        if entity.dead then
+            table.remove(self.entities, i)
         end
     end
 end
@@ -60,16 +78,16 @@ function FirstLevel:render()
         end
     end
 
-    if self.player then
-        self.player:render()
-    end
-
     for k, entity in pairs(self.entities) do
         if not entity.dead then entity:render(self.adjacentOffsetX, self.adjacentOffsetY) end
     end
 
-    for i = #self.projectiles, 1, -1 do
-        self.projectiles[i]:render()
+    if self.player then
+        self.player:render()
+    end
+
+    for p, projectile in pairs(self.projectiles) do
+        projectile:render()
     end
 end
 
@@ -127,14 +145,12 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 10 do
+    for i = 1, 3000 do
         local type = types[math.random(#types)]
-
-        table.insert(self.entities, Entity {
+        local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
             walkSpeed = ENTITY_DEFS[type].walkSpeed or 20,
 
-            -- ensure X and Y are within bounds of the map
             x = math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
                 VIRTUAL_WIDTH - TILE_SIZE * 2 - 16),
             y = math.random(MAP_RENDER_OFFSET_Y + TILE_SIZE,
@@ -142,15 +158,15 @@ function FirstLevel:generateEntities()
             
             width = 16,
             height = 16,
-
             health = 1
-        })
-
-        self.entities[i].stateMachine = StateMachine {
-            ['walk'] = function() return EntityWalkState(self.entities[i], self.tiles) end,
-            ['idle'] = function() return EntityIdleState(self.entities[i], self.tiles) end
         }
 
+        entity.stateMachine = StateMachine {
+            ['walk'] = function() return EntityWalkState(entity, self.tiles) end,
+            ['idle'] = function() return EntityIdleState(entity, self.tiles) end
+        }
+
+        table.insert(self.entities, entity)
         self.entities[i]:changeState('walk')
     end
 end

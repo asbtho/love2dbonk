@@ -6,7 +6,7 @@ function PlayerIdleState:update(dt)
         self.entity:changeState('walk')
     end
 
-    if love.keyboard.wasPressed("space") then
+    if love.keyboard.isDown("space") then
         self:shoot()
     end
 end

@@ -5,7 +5,8 @@ function love.load()
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    debugEnabled = true
+    debugEnabled = false
+    showFPS = true
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -46,4 +47,13 @@ function love.draw()
     push:start()
     gStateMachine:render()
     push:finish()
+    if showFPS then
+        love.showFPS()
+    end
+end
+
+function love.showFPS()
+    love.graphics.setFont(gFonts['medium'])
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 10, 10)
+    love.graphics.setFont(gFonts['small'])
 end

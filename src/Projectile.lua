@@ -5,6 +5,8 @@ function Projectile:init(def, dungeon)
     self.speed = def.speed
     self.x = def.x
     self.y = def.y
+    self.width = 2
+    self.height = 2
 
     self.dungeon = dungeon
 
@@ -29,7 +31,12 @@ end
 
 function Projectile:render()
     love.graphics.setColor(255, 255, 0, 255)
-    love.graphics.rectangle('line', self.x, self.y, 2, 2)
+    love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+end
+
+function Projectile:collides(target)
+    return not (self.x + self.width < target.x or self.x > target.x + target.width or
+                self.y + self.height < target.y or self.y > target.y + target.height)
 end
 
 function Projectile:getTileAt(entityX, entityY)
