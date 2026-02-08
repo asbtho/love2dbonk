@@ -2,10 +2,17 @@ Player = Class{__includes = Entity}
 
 function Player:init(def)
     Entity.init(self, def)
+    
+    self.bulletsPerSecond = 15
+    self.countdownTime = 1 / self.bulletsPerSecond
 end
 
 function Player:update(dt)
     Entity.update(self, dt)
+    self.countdownTime = self.countdownTime - dt
+    if  self.countdownTime <= -1 then
+        self.countdownTime = self.countdownTime + 1 / self.bulletsPerSecond
+    end
 end
 
 function Player:collides(target)

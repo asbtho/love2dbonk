@@ -9,8 +9,13 @@ end
 function PlayerWalkState:update(dt)
     self:walk()
 
-    if love.keyboard.wasPressed("space") then
-        self:shoot()
+    if love.keyboard.isDown("space") then
+        if self.entity.countdownTime <= 0 then
+            self:shoot()
+            gSounds['shoot']:stop()
+            gSounds['shoot']:play()
+            self.entity.countdownTime = self.entity.countdownTime + 1 / self.entity.bulletsPerSecond
+        end
     end
 
     -- perform base collision detection against walls

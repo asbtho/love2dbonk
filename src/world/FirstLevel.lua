@@ -10,6 +10,8 @@ function FirstLevel:init(player)
 
     self.entities = {}
     self:generateEntities()
+
+    self.powerups = {}
     
     self.player = player
 
@@ -27,6 +29,10 @@ end
 function FirstLevel:update(dt)
     self.player:update(dt)
 
+    for p, powerup in pairs(self.powerups) do
+        powerup:update(dt)
+    end
+
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
         if entity.health <= 0 then
@@ -43,6 +49,8 @@ function FirstLevel:update(dt)
         for j = #self.entities, 1, -1 do
             local entity = self.entities[j]
             if not entity.dead and projectile:collides(entity) then
+                gSounds['07000']:stop()
+                gSounds['07000']:play()
                 entity.health = entity.health - 1
                 table.remove(self.projectiles, i)
                 break
@@ -61,6 +69,13 @@ function FirstLevel:update(dt)
         local entity = self.entities[i]
         if entity.dead then
             table.remove(self.entities, i)
+        end
+    end
+
+    for i = #self.powerups, 1, -1 do
+        local powerup = self.powerups[i]
+        if powerup.ended then
+            table.remove(self.powerups, i)
         end
     end
 end
@@ -84,6 +99,10 @@ function FirstLevel:render()
 
     if self.player then
         self.player:render()
+    end
+
+    for p, powerup in pairs(self.powerups) do
+        powerup:render()
     end
 
     for p, projectile in pairs(self.projectiles) do
@@ -145,7 +164,7 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 3000 do
+    for i = 1, 300 do
         local type = types[math.random(#types)]
         local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
@@ -180,4 +199,7 @@ function FirstLevel:debug(tile, drawX, drawY, x, y)
     love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)
+    love.graphics.print( "powerups: " .. #self.powerups, 100, 0, 0)
+    love.graphics.print( "entities: " .. #self.entities, 200, 0, 0)
+    love.graphics.print( "projectiles: " .. #self.projectiles, 300, 0, 0)
 end

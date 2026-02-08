@@ -4,6 +4,7 @@ function love.load()
     math.randomseed(os.time())
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
+    love.audio.setVolume( 0.5 )
 
     debugEnabled = false
     showFPS = true
@@ -20,6 +21,9 @@ function love.load()
         ['play'] = function() return PlayState() end
     }
     gStateMachine:change('play')
+
+    --gSounds['music']:setLooping(true)
+    --gSounds['music']:play()
 
     love.keyboard.keysPressed = {}
 end
