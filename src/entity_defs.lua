@@ -1,5 +1,7 @@
 ENTITY_DEFS = {
     ['player'] = {
+        width = 19,
+        height = 19,
         walkSpeed = PLAYER_WALK_SPEED,
         animations = {
             ['walk-left'] = {
@@ -41,6 +43,8 @@ ENTITY_DEFS = {
         }
     },
     ['skeleton'] = {
+        width = 16,
+        height = 16,
         texture = 'entities',
         animations = {
             ['walk-left'] = {

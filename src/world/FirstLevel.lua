@@ -29,10 +29,6 @@ end
 function FirstLevel:update(dt)
     self.player:update(dt)
 
-    for p, powerup in pairs(self.powerups) do
-        powerup:update(dt)
-    end
-
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
         if entity.health <= 0 then
@@ -58,10 +54,16 @@ function FirstLevel:update(dt)
         end
     end
 
-    for i = #self.projectiles, 1, -1 do
-        local projectile = self.projectiles[i]
-        if projectile.destroyed then
-            table.remove(self.projectiles, i)
+    for i = #self.powerups, 1, -1 do
+        local powerup = self.powerups[i]
+        powerup:update(dt)
+        for j = #self.entities, 1, -1 do
+            local entity = self.entities[j]
+            if not entity.dead and powerup:collides(entity) then
+                gSounds['07000']:stop()
+                gSounds['07000']:play()
+                entity.health = entity.health - 1
+            end
         end
     end
 
@@ -76,6 +78,13 @@ function FirstLevel:update(dt)
         local powerup = self.powerups[i]
         if powerup.ended then
             table.remove(self.powerups, i)
+        end
+    end
+
+    for i = #self.projectiles, 1, -1 do
+        local projectile = self.projectiles[i]
+        if projectile.destroyed then
+            table.remove(self.projectiles, i)
         end
     end
 end
@@ -101,12 +110,12 @@ function FirstLevel:render()
         self.player:render()
     end
 
-    for p, powerup in pairs(self.powerups) do
-        powerup:render()
-    end
-
     for p, projectile in pairs(self.projectiles) do
         projectile:render()
+    end
+
+    for p, powerup in pairs(self.powerups) do
+        powerup:render()
     end
 end
 
@@ -175,8 +184,8 @@ function FirstLevel:generateEntities()
             y = math.random(MAP_RENDER_OFFSET_Y + TILE_SIZE,
                 VIRTUAL_HEIGHT - (VIRTUAL_HEIGHT - MAP_HEIGHT * TILE_SIZE) + MAP_RENDER_OFFSET_Y - TILE_SIZE - 16),
             
-            width = 16,
-            height = 16,
+            width = ENTITY_DEFS[type].width,
+            height = ENTITY_DEFS[type].height,
             health = 1
         }
 

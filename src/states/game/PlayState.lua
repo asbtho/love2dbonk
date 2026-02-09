@@ -13,8 +13,8 @@ function PlayState:init()
         x = VIRTUAL_WIDTH / 2 - 10,
         y = VIRTUAL_HEIGHT / 2 - 10,
         
-        width = 19,
-        height = 19,
+        width = ENTITY_DEFS['player'].width,
+        height = ENTITY_DEFS['player'].height,
 
         -- one heart == 2 health
         health = 6
