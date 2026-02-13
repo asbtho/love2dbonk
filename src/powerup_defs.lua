@@ -8,6 +8,7 @@ POWERUP_DEFS = {
                 interval = 1,
                 texture = '07000'
             }
-        }
+        },
+        logo = "empty"
     }
 }

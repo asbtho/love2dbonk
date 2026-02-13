@@ -9,11 +9,6 @@ WINDOW_HEIGHT = 720
 TILE_SIZE = 16
 
 --
--- entity constants
---
-PLAYER_WALK_SPEED = 120
-
---
 -- map constants
 --
 --MAP_WIDTH = VIRTUAL_WIDTH / TILE_SIZE - 2

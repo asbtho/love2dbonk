@@ -2,6 +2,10 @@ Player = Class{__includes = Entity}
 
 function Player:init(def)
     Entity.init(self, def)
+
+    self.health = 100
+    self.shootSpeed = 400
+    self.walkSpeed = 120
     
     self.bulletsPerSecond = 15
     self.countdownTime = 1 / self.bulletsPerSecond

@@ -48,7 +48,7 @@ function PlayerIdleState:shoot()
         x = self.entity.x + ( self.entity.width / 2 ),
         y = self.entity.y + ( self.entity.height / 2 ),
         direction = self.entity.direction,
-        speed = 400
+        speed = self.entity.shootSpeed
     }, self.dungeon)
     table.insert(self.dungeon.currentLevel.projectiles, projectile)
 end
