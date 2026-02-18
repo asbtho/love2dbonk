@@ -7,9 +7,9 @@ function PlayerWalkState:init(player, dungeon)
 end
 
 function PlayerWalkState:update(dt)
-    self:walk()
+    self:changeDirection()
 
-    if love.keyboard.isDown("space") then
+    if love.keyboard.wasPressed("space") then
         if self.entity.countdownTime <= 0 then
             self:shoot()
             gSounds['shoot']:stop()
@@ -51,7 +51,7 @@ function PlayerWalkState:update(dt)
     end
 end
 
-function PlayerWalkState:walk()
+function PlayerWalkState:changeDirection()
     if love.keyboard.isDown('left') then
         self.entity.direction = 'left'
         self.entity:changeAnimation('walk-left')

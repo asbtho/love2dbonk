@@ -10,6 +10,8 @@ function Entity:init(def)
     -- dimensions
     self.x = def.x
     self.y = def.y
+    self.directionX = 0
+    self.directionY = 0
     self.width = def.width
     self.height = def.height
 

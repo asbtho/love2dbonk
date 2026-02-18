@@ -1,8 +1,9 @@
 
 EntityWalkState = Class{__includes = BaseState}
 
-function EntityWalkState:init(entity, tiles)
+function EntityWalkState:init(entity, tiles, level)
     self.entity = entity
+    self.level = level
     self.entity:changeAnimation('walk-down')
 
     self.tiles = tiles
@@ -15,7 +16,7 @@ function EntityWalkState:init(entity, tiles)
 end
 
 function EntityWalkState:update(dt)
-    self:CheckCollision(dt)
+    self:walk(dt)
 end
 
 function EntityWalkState:render()
@@ -28,7 +29,7 @@ function EntityWalkState:render()
     end
 end
 
-function EntityWalkState:CheckCollision(dt)
+function EntityWalkState:walk(dt)
     -- assume we didn't hit a wall
     self.bumped = false
 
@@ -61,6 +62,12 @@ function EntityWalkState:CheckCollision(dt)
 end
 
 function EntityWalkState:processAI(params, dt)
+    --self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+    --self:directionTowardsPlayer()
+    self.entity:changeState('idle')
+end
+
+function EntityWalkState:oldProcessAI(params, dt)
     local level = params.level
     local directions = {'left', 'right', 'up', 'down'}
 
@@ -170,6 +177,19 @@ function EntityWalkState:debug()
     love.graphics.print( "x: " .. math.floor(self.entity.x - self.entity.offsetX) .. " y: " .. math.floor(self.entity.y - self.entity.offsetY), self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 10, 0)
     love.graphics.print( "offsetX:" .. self.entity.offsetX, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 30, 0)
     love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
+end
+
+function EntityWalkState:directionTowardsPlayer()
+    -- Calculate direction vector
+    local dirX = self.level.player.x - self.entity.x
+    local dirY = self.level.player.y - self.entity.y
+
+    -- Normalize the direction vector
+    local length = math.sqrt(dirX * dirX + dirY * dirY)
+    if length > 0 then
+        self.entity.directionX = dirX / length
+        self.entity.directionY = dirY / length
+    end
 end
 
 function EntityWalkState:debugCollide(tileA, tileB, tileC)

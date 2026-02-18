@@ -31,39 +31,32 @@ function FirstLevel:update(dt)
 
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
-        if entity.health <= 0 then
-            entity.dead = true
-        elseif not entity.dead then
-            entity:processAI({level = self}, dt)
-            entity:update(dt)
-        end
-    end
-
-    for i = #self.projectiles, 1, -1 do
-        local projectile = self.projectiles[i]
-        projectile:update(dt)
-        for j = #self.entities, 1, -1 do
-            local entity = self.entities[j]
+        for j = #self.projectiles, 1, -1 do
+            local projectile = self.projectiles[j]
             if not entity.dead and projectile:collides(entity) then
                 gSounds['07000']:stop()
                 gSounds['07000']:play()
                 entity.health = entity.health - 1
-                table.remove(self.projectiles, i)
+                projectile.destroyed = true
+                table.remove(self.projectiles, j)
                 break
             end
         end
-    end
 
-    for i = #self.powerups, 1, -1 do
-        local powerup = self.powerups[i]
-        powerup:update(dt)
-        for j = #self.entities, 1, -1 do
-            local entity = self.entities[j]
+        for l = #self.powerups, 1, -1 do
+            local powerup = self.powerups[l]
             if not entity.dead and powerup:collides(entity) then
                 gSounds['07000']:stop()
                 gSounds['07000']:play()
                 entity.health = entity.health - 1
             end
+        end
+
+        if entity.health <= 0 then
+            entity.dead = true
+        elseif not entity.dead then
+            entity:processAI({level = self}, dt)
+            entity:update(dt)
         end
     end
 
@@ -78,6 +71,8 @@ function FirstLevel:update(dt)
         local powerup = self.powerups[i]
         if powerup.ended then
             table.remove(self.powerups, i)
+        else
+            powerup:update(dt)
         end
     end
 
@@ -85,6 +80,8 @@ function FirstLevel:update(dt)
         local projectile = self.projectiles[i]
         if projectile.destroyed then
             table.remove(self.projectiles, i)
+        else
+            projectile:update(dt)
         end
     end
 end
@@ -173,7 +170,7 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 300 do
+    for i = 1, 50 do
         local type = types[math.random(#types)]
         local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
@@ -190,7 +187,7 @@ function FirstLevel:generateEntities()
         }
 
         entity.stateMachine = StateMachine {
-            ['walk'] = function() return EntityWalkState(entity, self.tiles) end,
+            ['walk'] = function() return EntityWalkState(entity, self.tiles, self) end,
             ['idle'] = function() return EntityIdleState(entity, self.tiles) end
         }
 
