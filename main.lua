@@ -1,11 +1,19 @@
 require 'src/Dependencies'
+local moonshine = require 'moonshine'
 
 function love.load()
     math.randomseed(os.time())
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
+    love.audio.setVolume( 0.5 )
+    effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.scanlines)
+    effect.crt.distortionFactor = {1.06, 1.065}
+    effect.scanlines.thickness = 0.2
+    effect.scanlines.opacity = 0.8
 
-    debugEnabled = true
+    debugEnabled = false
+    showFPS = true
+    effectsEnabled = false
 
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -19,6 +27,9 @@ function love.load()
         ['play'] = function() return PlayState() end
     }
     gStateMachine:change('play')
+
+    --gSounds['music']:setLooping(true)
+    --gSounds['music']:play()
 
     love.keyboard.keysPressed = {}
 end
@@ -44,6 +55,21 @@ end
 
 function love.draw()
     push:start()
-    gStateMachine:render()
+    if effectsEnabled then
+        effect(function()
+             gStateMachine:render()
+        end)
+    else
+        gStateMachine:render()
+    end
     push:finish()
+    if showFPS then
+        love.showFPS()
+    end
+end
+
+function love.showFPS()
+    love.graphics.setFont(gFonts['medium'])
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 10, 10)
+    love.graphics.setFont(gFonts['small'])
 end

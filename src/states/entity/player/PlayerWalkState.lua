@@ -7,10 +7,15 @@ function PlayerWalkState:init(player, dungeon)
 end
 
 function PlayerWalkState:update(dt)
-    self:walk()
+    self:changeDirection()
 
     if love.keyboard.wasPressed("space") then
-        self:shoot()
+        if self.entity.countdownTime <= 0 then
+            self:shoot()
+            gSounds['shoot']:stop()
+            gSounds['shoot']:play()
+            self.entity.countdownTime = self.entity.countdownTime + 1 / self.entity.bulletsPerSecond
+        end
     end
 
     -- perform base collision detection against walls
@@ -20,33 +25,33 @@ function PlayerWalkState:update(dt)
     if self.bumped then
         if self.entity.direction == 'left' then
             -- temporarily adjust position into the wall, since bumping pushes outward
-            self.entity.x = self.entity.x - PLAYER_WALK_SPEED * dt
+            self.entity.x = self.entity.x - self.entity.walkSpeed * dt
 
             -- readjust
-            self.entity.x = self.entity.x + PLAYER_WALK_SPEED * dt
+            self.entity.x = self.entity.x + self.entity.walkSpeed * dt
         elseif self.entity.direction == 'right' then
             -- temporarily adjust position
-            self.entity.x = self.entity.x + PLAYER_WALK_SPEED * dt
+            self.entity.x = self.entity.x + self.entity.walkSpeed * dt
 
             -- readjust
-            self.entity.x = self.entity.x - PLAYER_WALK_SPEED * dt
+            self.entity.x = self.entity.x - self.entity.walkSpeed * dt
         elseif self.entity.direction == 'up' then
             -- temporarily adjust position
-            self.entity.y = self.entity.y - PLAYER_WALK_SPEED * dt
+            self.entity.y = self.entity.y - self.entity.walkSpeed * dt
 
             -- readjust
-            self.entity.y = self.entity.y + PLAYER_WALK_SPEED * dt
+            self.entity.y = self.entity.y + self.entity.walkSpeed * dt
         else
             -- temporarily adjust position
-            self.entity.y = self.entity.y + PLAYER_WALK_SPEED * dt
+            self.entity.y = self.entity.y + self.entity.walkSpeed * dt
         
             -- readjust
-            self.entity.y = self.entity.y - PLAYER_WALK_SPEED * dt
+            self.entity.y = self.entity.y - self.entity.walkSpeed * dt
         end
     end
 end
 
-function PlayerWalkState:walk()
+function PlayerWalkState:changeDirection()
     if love.keyboard.isDown('left') then
         self.entity.direction = 'left'
         self.entity:changeAnimation('walk-left')
@@ -69,7 +74,7 @@ function PlayerWalkState:shoot()
         x = self.entity.x + ( self.entity.width / 2 ),
         y = self.entity.y + ( self.entity.height / 2 ),
         direction = self.entity.direction,
-        speed = 400
+        speed = self.entity.shootSpeed
     }, self.dungeon)
     table.insert(self.dungeon.currentLevel.projectiles, projectile)
 end

@@ -10,6 +10,8 @@ function FirstLevel:init(player)
 
     self.entities = {}
     self:generateEntities()
+
+    self.powerups = {}
     
     self.player = player
 
@@ -29,6 +31,26 @@ function FirstLevel:update(dt)
 
     for i = #self.entities, 1, -1 do
         local entity = self.entities[i]
+        for j = #self.projectiles, 1, -1 do
+            local projectile = self.projectiles[j]
+            if not entity.dead and projectile:collides(entity) then
+                gSounds['07000']:stop()
+                gSounds['07000']:play()
+                entity.health = entity.health - 1
+                projectile.destroyed = true
+                table.remove(self.projectiles, j)
+                break
+            end
+        end
+
+        for l = #self.powerups, 1, -1 do
+            local powerup = self.powerups[l]
+            if not entity.dead and powerup:collides(entity) then
+                gSounds['07000']:stop()
+                gSounds['07000']:play()
+                entity.health = entity.health - 1
+            end
+        end
 
         if entity.health <= 0 then
             entity.dead = true
@@ -38,11 +60,28 @@ function FirstLevel:update(dt)
         end
     end
 
+    for i = #self.entities, 1, -1 do
+        local entity = self.entities[i]
+        if entity.dead then
+            table.remove(self.entities, i)
+        end
+    end
+
+    for i = #self.powerups, 1, -1 do
+        local powerup = self.powerups[i]
+        if powerup.ended then
+            table.remove(self.powerups, i)
+        else
+            powerup:update(dt)
+        end
+    end
+
     for i = #self.projectiles, 1, -1 do
         local projectile = self.projectiles[i]
-        projectile:update(dt)
         if projectile.destroyed then
             table.remove(self.projectiles, i)
+        else
+            projectile:update(dt)
         end
     end
 end
@@ -60,16 +99,20 @@ function FirstLevel:render()
         end
     end
 
-    if self.player then
-        self.player:render()
-    end
-
     for k, entity in pairs(self.entities) do
         if not entity.dead then entity:render(self.adjacentOffsetX, self.adjacentOffsetY) end
     end
 
-    for i = #self.projectiles, 1, -1 do
-        self.projectiles[i]:render()
+    if self.player then
+        self.player:render()
+    end
+
+    for p, projectile in pairs(self.projectiles) do
+        projectile:render()
+    end
+
+    for p, powerup in pairs(self.powerups) do
+        powerup:render()
     end
 end
 
@@ -127,30 +170,28 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 10 do
+    for i = 1, 1000 do
         local type = types[math.random(#types)]
-
-        table.insert(self.entities, Entity {
+        local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
             walkSpeed = ENTITY_DEFS[type].walkSpeed or 20,
 
-            -- ensure X and Y are within bounds of the map
             x = math.random(MAP_RENDER_OFFSET_X + TILE_SIZE,
                 VIRTUAL_WIDTH - TILE_SIZE * 2 - 16),
             y = math.random(MAP_RENDER_OFFSET_Y + TILE_SIZE,
                 VIRTUAL_HEIGHT - (VIRTUAL_HEIGHT - MAP_HEIGHT * TILE_SIZE) + MAP_RENDER_OFFSET_Y - TILE_SIZE - 16),
             
-            width = 16,
-            height = 16,
-
+            width = ENTITY_DEFS[type].width,
+            height = ENTITY_DEFS[type].height,
             health = 1
-        })
-
-        self.entities[i].stateMachine = StateMachine {
-            ['walk'] = function() return EntityWalkState(self.entities[i], self.tiles) end,
-            ['idle'] = function() return EntityIdleState(self.entities[i], self.tiles) end
         }
 
+        entity.stateMachine = StateMachine {
+            ['walk'] = function() return EntityWalkState(entity, self.tiles, self) end,
+            ['idle'] = function() return EntityIdleState(entity, self.tiles) end
+        }
+
+        table.insert(self.entities, entity)
         self.entities[i]:changeState('walk')
     end
 end
@@ -164,4 +205,9 @@ function FirstLevel:debug(tile, drawX, drawY, x, y)
     love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)
+    love.graphics.print( "powerups: " .. #self.powerups, 100, 0, 0)
+    love.graphics.print( "entities: " .. #self.entities, 200, 0, 0)
+    love.graphics.print( "projectiles: " .. #self.projectiles, 300, 0, 0)
+    --love.graphics.print( "entity dirX: " .. self.entities[1].directionX, 400, 0, 0)
+    --love.graphics.print( "entity dirY: " .. self.entities[1].directionY, 500, 0, 0)
 end
