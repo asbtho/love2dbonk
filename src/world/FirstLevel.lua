@@ -170,7 +170,7 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 50 do
+    for i = 1, 1000 do
         local type = types[math.random(#types)]
         local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
@@ -208,4 +208,6 @@ function FirstLevel:debug(tile, drawX, drawY, x, y)
     love.graphics.print( "powerups: " .. #self.powerups, 100, 0, 0)
     love.graphics.print( "entities: " .. #self.entities, 200, 0, 0)
     love.graphics.print( "projectiles: " .. #self.projectiles, 300, 0, 0)
+    --love.graphics.print( "entity dirX: " .. self.entities[1].directionX, 400, 0, 0)
+    --love.graphics.print( "entity dirY: " .. self.entities[1].directionY, 500, 0, 0)
 end

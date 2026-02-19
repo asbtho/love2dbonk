@@ -4,6 +4,8 @@ function Entity:init(def)
 
     -- in top-down games, there are four directions instead of two
     self.direction = 'down'
+    self.directionHorizontal = 'right' -- x right or left
+    self.directionVertical = 'down' -- y up or down
 
     self.animations = self:createAnimations(def.animations)
 

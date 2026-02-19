@@ -6,6 +6,7 @@ function Player:init(def)
     self.health = 100
     self.shootSpeed = 400
     self.walkSpeed = 120
+    self.isPlayer = true
     
     self.bulletsPerSecond = 15
     self.countdownTime = 1 / self.bulletsPerSecond

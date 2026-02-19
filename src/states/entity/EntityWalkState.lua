@@ -16,7 +16,12 @@ function EntityWalkState:init(entity, tiles, level)
 end
 
 function EntityWalkState:update(dt)
-    self:walk(dt)
+    if self.entity.isPlayer then
+        self:playerWalk(dt)
+    else
+        self:enemyWalk(dt)
+    end
+    
 end
 
 function EntityWalkState:render()
@@ -29,7 +34,44 @@ function EntityWalkState:render()
     end
 end
 
-function EntityWalkState:walk(dt)
+function EntityWalkState:enemyWalk(dt)
+    -- boundary checking on all sides, allowing us to avoid collision detection on tiles
+    if self.entity.directionHorizontal == 'left' and self.entity.directionVertical == 'up' then
+        if not self:collidesToWallLeft() then
+            self.entity.x = self.entity.x + self.entity.directionX * self.entity.walkSpeed * dt
+        end
+
+        if not self:collidesToWallUp() then
+            self.entity.y = self.entity.y + self.entity.directionY * self.entity.walkSpeed * dt
+        end
+    elseif self.entity.directionHorizontal == 'left' and self.entity.directionVertical == 'down' then
+        if not self:collidesToWallLeft() then
+            self.entity.x = self.entity.x + self.entity.directionX * self.entity.walkSpeed * dt
+        end
+
+        if not self:collidesToWallDown() then
+            self.entity.y = self.entity.y + self.entity.directionY * self.entity.walkSpeed * dt
+        end
+    elseif self.entity.directionHorizontal == "right" and self.entity.directionVertical == 'up' then
+        if not self:collidesToWallRight() then
+            self.entity.x = self.entity.x + self.entity.directionX * self.entity.walkSpeed * dt
+        end
+
+        if not self:collidesToWallUp() then
+            self.entity.y = self.entity.y + self.entity.directionY * self.entity.walkSpeed * dt
+        end
+    elseif self.entity.directionHorizontal == "right" and self.entity.directionVertical == 'down' then
+        if not self:collidesToWallRight() then
+            self.entity.x = self.entity.x + self.entity.directionX * self.entity.walkSpeed * dt
+        end
+
+        if not self:collidesToWallDown() then
+            self.entity.y = self.entity.y + self.entity.directionY * self.entity.walkSpeed * dt
+        end
+    end
+end
+
+function EntityWalkState:playerWalk(dt)
     -- assume we didn't hit a wall
     self.bumped = false
 
@@ -62,9 +104,9 @@ function EntityWalkState:walk(dt)
 end
 
 function EntityWalkState:processAI(params, dt)
-    --self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
-    --self:directionTowardsPlayer()
-    self.entity:changeState('idle')
+    self.entity:changeAnimation('walk-' .. tostring(self.entity.direction))
+    self:directionTowardsPlayer()
+    self:updateDirection()
 end
 
 function EntityWalkState:oldProcessAI(params, dt)
@@ -168,17 +210,6 @@ function EntityWalkState:collidesToWallRight()
     return tileA.isWall or tileB.isWall
 end
 
-function EntityWalkState:debug()
-    love.graphics.setColor(255, 0, 255, 255)
-    love.graphics.rectangle('line', self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY, self.entity.width, self.entity.height)
-    love.graphics.setColor(255, 255, 0, 255)
-    love.graphics.rectangle('line', self.entity.x, self.entity.y, 1, 1)
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.print( "x: " .. math.floor(self.entity.x - self.entity.offsetX) .. " y: " .. math.floor(self.entity.y - self.entity.offsetY), self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 10, 0)
-    love.graphics.print( "offsetX:" .. self.entity.offsetX, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 30, 0)
-    love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
-end
-
 function EntityWalkState:directionTowardsPlayer()
     -- Calculate direction vector
     local dirX = self.level.player.x - self.entity.x
@@ -190,6 +221,31 @@ function EntityWalkState:directionTowardsPlayer()
         self.entity.directionX = dirX / length
         self.entity.directionY = dirY / length
     end
+end
+
+function EntityWalkState:updateDirection()
+    if self.entity.directionX > 0 then
+        self.entity.directionHorizontal = "right"
+    else
+        self.entity.directionHorizontal = "left"
+    end
+
+    if self.entity.directionY > 0 then
+        self.entity.directionVertical = "down"
+    else
+        self.entity.directionVertical = "up"
+    end
+end
+
+function EntityWalkState:debug()
+    love.graphics.setColor(255, 0, 255, 255)
+    love.graphics.rectangle('line', self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY, self.entity.width, self.entity.height)
+    love.graphics.setColor(255, 255, 0, 255)
+    love.graphics.rectangle('line', self.entity.x, self.entity.y, 1, 1)
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print( "x: " .. math.floor(self.entity.x - self.entity.offsetX) .. " y: " .. math.floor(self.entity.y - self.entity.offsetY), self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 10, 0)
+    love.graphics.print( "offsetX:" .. self.entity.offsetX, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 30, 0)
+    love.graphics.print( "offsetY:" .. self.entity.offsetY, self.entity.x - self.entity.offsetX, self.entity.y - self.entity.offsetY - 20, 0)
 end
 
 function EntityWalkState:debugCollide(tileA, tileB, tileC)
