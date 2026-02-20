@@ -15,7 +15,7 @@ function love.load()
     showFPS = true
     effectsEnabled = false
 
-    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
+    push:setupScreen(VIRTUAL_WIDTH + STATS_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         vsync = true,
         resizable = true
@@ -71,5 +71,4 @@ end
 function love.showFPS()
     love.graphics.setFont(gFonts['medium'])
     love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 10, 10)
-    love.graphics.setFont(gFonts['small'])
 end

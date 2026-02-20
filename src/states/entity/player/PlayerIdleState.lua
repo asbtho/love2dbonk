@@ -6,12 +6,13 @@ function PlayerIdleState:update(dt)
         self.entity:changeState('walk')
     end
 
-    if love.keyboard.wasPressed("space") then
-        if self.entity.countdownTime <= 0 then
+    if love.keyboard.isDown("space") then
+        self.entity.isShooting = true
+        if self.entity.bulletTimer >= 1 / self.entity.bulletsPerSecond then
             self:shoot()
             gSounds['shoot']:stop()
             gSounds['shoot']:play()
-            self.entity.countdownTime = self.entity.countdownTime + 1 / self.entity.bulletsPerSecond
+            self.entity.bulletTimer = 0
         end
     end
 

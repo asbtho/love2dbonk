@@ -65,5 +65,6 @@ function Powerup:debug()
     love.graphics.setColor(255, 0, 255, 255)
     love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
     love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(gFonts['small'])
     love.graphics.print( "x:" .. self.x .. "\ny:" .. self.y, self.x, self.y, 0)
 end
