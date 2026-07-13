@@ -4,11 +4,11 @@ function Player:init(def)
     Entity.init(self, def)
 
     self.health = 100
-    self.shootSpeed = 400
+    self.shootSpeed = 100
     self.walkSpeed = 120
     self.isPlayer = true
     
-    self.bulletsPerSecond = 15
+    self.bulletsPerSecond = 2
     self.bulletTimer = 0
 
     self.isShooting = false

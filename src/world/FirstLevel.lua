@@ -34,8 +34,8 @@ function FirstLevel:update(dt)
         for j = #self.projectiles, 1, -1 do
             local projectile = self.projectiles[j]
             if not entity.dead and projectile:collides(entity) then
-                gSounds['07000']:stop()
-                gSounds['07000']:play()
+                gSounds['explosion']:stop()
+                gSounds['explosion']:play()
                 entity.health = entity.health - 1
                 projectile.destroyed = true
                 table.remove(self.projectiles, j)
@@ -53,8 +53,8 @@ function FirstLevel:update(dt)
         end
 
         if not entity.dead and self.player:collides(entity) and not self.player.invulnerable then
-            gSounds['07000']:stop()
-            gSounds['07000']:play()
+            gSounds['hurt']:stop()
+            gSounds['hurt']:play()
             self.player:goInvulnerable(0.2)
             self.player:damage(entity.touchDamage)
         end
@@ -180,7 +180,7 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 100 do
+    for i = 1, 50 do
         local type = types[math.random(#types)]
         local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
@@ -211,9 +211,9 @@ end
 function FirstLevel:renderStats()
     love.graphics.setFont(gFonts['medium'])
     love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.print("Score: "..tostring(self.player.score), VIRTUAL_WIDTH, 10)
-    love.graphics.print("Health: "..tostring(self.player.health), VIRTUAL_WIDTH, 30)
-    love.graphics.print("Speed: "..tostring(self.player.walkSpeed), VIRTUAL_WIDTH, 50)
+    love.graphics.print("Score: "..tostring(self.player.score), VIRTUAL_WIDTH - 120, 20)
+    love.graphics.print("Health: "..tostring(self.player.health), VIRTUAL_WIDTH - 120, 40)
+    love.graphics.print("Speed: "..tostring(self.player.walkSpeed), VIRTUAL_WIDTH - 120, 60)
 end
 
 function FirstLevel:debug(tile, drawX, drawY, x, y)

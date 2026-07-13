@@ -15,6 +15,7 @@ require 'src/constants'
 require 'src/Entity'
 require 'src/entity_defs'
 require 'src/powerup_defs'
+require 'src/weapon_defs'
 require 'src/Player'
 require 'src/StateMachine'
 require 'src/Util'
@@ -45,7 +46,8 @@ gTextures = {
     ['soldier-walk-right'] = love.graphics.newImage('graphics/soldier_walk_right.png'),
     ['soldier-walk-left'] = love.graphics.newImage('graphics/soldier_walk_left.png'),
     ['entities'] = love.graphics.newImage('graphics/entities.png'),
-    ['07000'] = love.graphics.newImage('graphics/07000.png')
+    ['07000'] = love.graphics.newImage('graphics/07000.png'),
+    ['fireeffects'] = love.graphics.newImage('graphics/fireeffects.png')
 }
 
 gFrames = {
@@ -53,7 +55,8 @@ gFrames = {
     ['soldier-walk-right'] = GenerateQuads(gTextures['soldier-walk-right'], 19, 19),
     ['soldier-walk-left'] = GenerateQuads(gTextures['soldier-walk-left'], 19, 19),
     ['entities'] = GenerateQuads(gTextures['entities'], 16, 16),
-    ['07000'] = GenerateQuads(gTextures['07000'], 62, 17)
+    ['07000'] = GenerateQuads(gTextures['07000'], 62, 17),
+    ['fireeffects'] = GenerateQuads(gTextures['fireeffects'], 16, 16)
 }
 
 gFonts = {
@@ -62,7 +65,10 @@ gFonts = {
 }
 
 gSounds = {
-    ['music'] = love.audio.newSource('sounds/music.wav', 'static'),
+    ['music'] = love.audio.newSource('sounds/music.ogg', 'static'),
     ['shoot'] = love.audio.newSource('sounds/pew.mp3', 'static'),
-    ['07000'] = love.audio.newSource('sounds/07000.mp3', 'static')
+    ['07000'] = love.audio.newSource('sounds/07000.mp3', 'static'),
+    ['fireball'] = love.audio.newSource('sounds/fireball.wav', 'static'),
+    ['explosion'] = love.audio.newSource('sounds/explosion.wav', 'static'),
+    ['hurt'] = love.audio.newSource('sounds/hurt.wav', 'static')
 }

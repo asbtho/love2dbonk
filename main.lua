@@ -5,18 +5,23 @@ function love.load()
     math.randomseed(os.time())
     love.window.setTitle('Unnamed Game')
     love.graphics.setDefaultFilter('nearest', 'nearest')
-    love.audio.setVolume( 0.5 )
+    -- set some volume settings
+    love.audio.setVolume( 1 )
+    gSounds['fireball']:setVolume( 0.6 )
+    gSounds['explosion']:setVolume( 0.6 )
+    gSounds['hurt']:setVolume( 1 )
+    gSounds['music']:setVolume( 0.3 )
     effect = moonshine(moonshine.effects.crt).chain(moonshine.effects.scanlines)
-    effect.crt.distortionFactor = {1.06, 1.065}
-    effect.scanlines.thickness = 0.2
-    effect.scanlines.opacity = 0.8
+    effect.crt.distortionFactor = {1.01, 1.01}
+    effect.scanlines.thickness = 0.1
+    effect.scanlines.opacity = 0.9
 
     debugEnabled = false
     showFPS = true
-    effectsEnabled = false
+    effectsEnabled = true
 
     push:setupScreen(VIRTUAL_WIDTH + STATS_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
-        fullscreen = false,
+        fullscreen = true,
         vsync = true,
         resizable = true
     })
@@ -28,8 +33,8 @@ function love.load()
     }
     gStateMachine:change('play')
 
-    --gSounds['music']:setLooping(true)
-    --gSounds['music']:play()
+    gSounds['music']:setLooping(true)
+    gSounds['music']:play()
 
     love.keyboard.keysPressed = {}
 end
