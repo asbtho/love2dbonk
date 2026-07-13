@@ -6,12 +6,13 @@ function PlayerIdleState:update(dt)
         self.entity:changeState('walk')
     end
 
-    if love.keyboard.wasPressed("space") then
-        if self.entity.countdownTime <= 0 then
+    if love.keyboard.isDown("space") then
+        self.entity.isShooting = true
+        if self.entity.bulletTimer >= 1 / self.entity.bulletsPerSecond then
             self:shoot()
-            gSounds['shoot']:stop()
-            gSounds['shoot']:play()
-            self.entity.countdownTime = self.entity.countdownTime + 1 / self.entity.bulletsPerSecond
+            gSounds['fireball']:stop()
+            gSounds['fireball']:play()
+            self.entity.bulletTimer = 0
         end
     end
 
@@ -35,11 +36,12 @@ function PlayerIdleState:update(dt)
 end
 
 function PlayerIdleState:shoot()
-    local projectile = Projectile({
+    local fireball = Projectile({
         x = self.entity.x + ( self.entity.width / 2 ),
         y = self.entity.y + ( self.entity.height / 2 ),
         direction = self.entity.direction,
-        speed = self.entity.shootSpeed
+        speed = self.entity.shootSpeed,
+        animations = WEAPON_DEFS['fireball'].animations
     }, self.dungeon)
-    table.insert(self.dungeon.currentLevel.projectiles, projectile)
+    table.insert(self.dungeon.currentLevel.projectiles, fireball)
 end

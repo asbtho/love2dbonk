@@ -34,8 +34,8 @@ function FirstLevel:update(dt)
         for j = #self.projectiles, 1, -1 do
             local projectile = self.projectiles[j]
             if not entity.dead and projectile:collides(entity) then
-                gSounds['07000']:stop()
-                gSounds['07000']:play()
+                gSounds['explosion']:stop()
+                gSounds['explosion']:play()
                 entity.health = entity.health - 1
                 projectile.destroyed = true
                 table.remove(self.projectiles, j)
@@ -52,8 +52,16 @@ function FirstLevel:update(dt)
             end
         end
 
+        if not entity.dead and self.player:collides(entity) and not self.player.invulnerable then
+            gSounds['hurt']:stop()
+            gSounds['hurt']:play()
+            self.player:goInvulnerable(0.2)
+            self.player:damage(entity.touchDamage)
+        end
+
         if entity.health <= 0 then
             entity.dead = true
+            self.player.score = self.player.score + entity.scorePoints
         elseif not entity.dead then
             entity:processAI({level = self}, dt)
             entity:update(dt)
@@ -114,6 +122,8 @@ function FirstLevel:render()
     for p, powerup in pairs(self.powerups) do
         powerup:render()
     end
+
+    self:renderStats()
 end
 
 function FirstLevel:generateWallsAndFloors()
@@ -170,7 +180,7 @@ end
 function FirstLevel:generateEntities()
     local types = {'skeleton'}
 
-    for i = 1, 1000 do
+    for i = 1, 50 do
         local type = types[math.random(#types)]
         local entity = Entity {
             animations = ENTITY_DEFS[type].animations,
@@ -183,7 +193,9 @@ function FirstLevel:generateEntities()
             
             width = ENTITY_DEFS[type].width,
             height = ENTITY_DEFS[type].height,
-            health = 1
+            health = ENTITY_DEFS[type].health,
+            touchDamage = ENTITY_DEFS[type].touchDamage,
+            scorePoints = ENTITY_DEFS[type].scorePoints
         }
 
         entity.stateMachine = StateMachine {
@@ -196,6 +208,14 @@ function FirstLevel:generateEntities()
     end
 end
 
+function FirstLevel:renderStats()
+    love.graphics.setFont(gFonts['medium'])
+    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.print("Score: "..tostring(self.player.score), VIRTUAL_WIDTH - 120, 20)
+    love.graphics.print("Health: "..tostring(self.player.health), VIRTUAL_WIDTH - 120, 40)
+    love.graphics.print("Speed: "..tostring(self.player.walkSpeed), VIRTUAL_WIDTH - 120, 60)
+end
+
 function FirstLevel:debug(tile, drawX, drawY, x, y)
     if tile.bumped then
         love.graphics.setColor(255, 255, 0, 255)
@@ -204,10 +224,14 @@ function FirstLevel:debug(tile, drawX, drawY, x, y)
     end
     love.graphics.rectangle('line', drawX, drawY, TILE_SIZE, TILE_SIZE)
     love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setFont(gFonts['small'])
     love.graphics.print( "x:" .. x .. "\ny:" .. y, drawX, drawY, 0)
     love.graphics.print( "powerups: " .. #self.powerups, 100, 0, 0)
     love.graphics.print( "entities: " .. #self.entities, 200, 0, 0)
     love.graphics.print( "projectiles: " .. #self.projectiles, 300, 0, 0)
-    --love.graphics.print( "entity dirX: " .. self.entities[1].directionX, 400, 0, 0)
-    --love.graphics.print( "entity dirY: " .. self.entities[1].directionY, 500, 0, 0)
+    if #self.entities == 1 then
+        love.graphics.print( "entity dirX: " .. self.entities[1].directionX, 400, 0, 0)
+        love.graphics.print( "entity dirY: " .. self.entities[1].directionY, 500, 0, 0)
+    end
+    
 end

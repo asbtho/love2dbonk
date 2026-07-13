@@ -4,19 +4,22 @@ function Player:init(def)
     Entity.init(self, def)
 
     self.health = 100
-    self.shootSpeed = 400
+    self.shootSpeed = 100
     self.walkSpeed = 120
     self.isPlayer = true
     
-    self.bulletsPerSecond = 15
-    self.countdownTime = 1 / self.bulletsPerSecond
+    self.bulletsPerSecond = 2
+    self.bulletTimer = 0
+
+    self.isShooting = false
+
+    self.score = 0
 end
 
 function Player:update(dt)
     Entity.update(self, dt)
-    self.countdownTime = self.countdownTime - dt
-    if  self.countdownTime <= -1 then
-        self.countdownTime = self.countdownTime + 1 / self.bulletsPerSecond
+    if self.isShooting then
+        self.bulletTimer = self.bulletTimer + dt
     end
 end
 

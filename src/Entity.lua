@@ -22,8 +22,18 @@ function Entity:init(def)
     self.offsetY = def.offsetY or 0
 
     self.walkSpeed = def.walkSpeed
+    self.touchDamage = def.touchDamage
+    self.scorePoints = def.scorePoints
 
     self.health = def.health
+
+    -- flags for flashing the entity when hit
+    self.invulnerable = false
+    self.invulnerableDuration = 0
+    self.invulnerableTimer = 0
+
+    -- timer for turning transparency on and off, flashing
+    self.flashTimer = 0
 
     self.dead = false
 end
@@ -54,6 +64,11 @@ function Entity:damage(dmg)
     self.health = self.health - dmg
 end
 
+function Entity:goInvulnerable(duration)
+    self.invulnerable = true
+    self.invulnerableDuration = duration
+end
+
 function Entity:changeState(name)
     self.stateMachine:change(name)
 end
@@ -63,6 +78,18 @@ function Entity:changeAnimation(name)
 end
 
 function Entity:update(dt)
+    if self.invulnerable then
+        self.flashTimer = self.flashTimer + dt
+        self.invulnerableTimer = self.invulnerableTimer + dt
+
+        if self.invulnerableTimer > self.invulnerableDuration then
+            self.invulnerable = false
+            self.invulnerableTimer = 0
+            self.invulnerableDuration = 0
+            self.flashTimer = 0
+        end
+    end
+
     self.stateMachine:update(dt)
 
     if self.currentAnimation then
@@ -75,6 +102,12 @@ function Entity:processAI(params, dt)
 end
 
 function Entity:render(adjacentOffsetX, adjacentOffsetY)
+    -- draw sprite slightly transparent if invulnerable every 0.04 seconds
+    if self.invulnerable and self.flashTimer > 0.06 then
+        self.flashTimer = 0
+        love.graphics.setColor(1, 1, 1, 64/255)
+    end
+
     self.x, self.y = self.x + (adjacentOffsetX or 0), self.y + (adjacentOffsetY or 0)
     self.stateMachine:render()
     love.graphics.setColor(1, 1, 1, 1)

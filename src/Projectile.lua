@@ -5,8 +5,14 @@ function Projectile:init(def, dungeon)
     self.speed = def.speed
     self.x = def.x
     self.y = def.y
-    self.width = 2
-    self.height = 2
+    self.width = 8
+    self.height = 8
+    self.animations = self:createAnimations(def.animations)
+    self:changeAnimation('active')
+
+    -- drawing offsets for padded sprites
+    self.offsetX = def.offsetX or 0
+    self.offsetY = def.offsetY or 0
 
     self.dungeon = dungeon
 
@@ -24,14 +30,23 @@ function Projectile:update(dt)
         self.y = self.y + self.speed * dt
     end
 
+    if self.currentAnimation then
+        self.currentAnimation:update(dt)
+    end
+
     if self:collidesToWall() then
         self.destroyed = true
     end
 end
 
 function Projectile:render()
-    love.graphics.setColor(255, 255, 0, 255)
-    love.graphics.rectangle('line', self.x, self.y, self.width, self.height)
+    local anim = self.currentAnimation
+    love.graphics.draw(gTextures[anim.texture], gFrames[anim.texture][anim:getCurrentFrame()],
+        math.floor(self.x - self.width / 2 - self.offsetX), math.floor(self.y - self.height / 2 - self.offsetY))
+
+    if debugEnabled then
+        self:debug()
+    end
 end
 
 function Projectile:collides(target)
@@ -47,4 +62,28 @@ end
 
 function Projectile:collidesToWall()
     return self:getTileAt(self.x, self.y).isWall
+end
+
+function Projectile:changeAnimation(name)
+    self.currentAnimation = self.animations[name]
+end
+
+function Projectile:createAnimations(animations)
+    local animationsReturned = {}
+
+    for k, animationDef in pairs(animations) do
+        animationsReturned[k] = Animation {
+            texture = animationDef.texture or 'fireeffects',
+            frames = animationDef.frames,
+            interval = animationDef.interval
+        }
+    end
+
+    return animationsReturned
+end
+
+
+function Projectile:debug()
+    love.graphics.rectangle('line', math.floor(self.x - self.offsetX ), math.floor(self.y - self.offsetY), self.width, self.height)
+    love.graphics.setColor(255, 255, 255, 255)
 end
