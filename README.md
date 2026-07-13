@@ -1,2 +1,2 @@
-# cs50g-exam-game
+# Love2dBonk
 cs50g-exam-game
